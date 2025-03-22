@@ -16,6 +16,7 @@ function initMap() {
         mapTypeControl: false
     });
 }
+window.initMap = initMap // for google api call
 
 function clearMap() {
     for (const overlay of routeOverlays) {
