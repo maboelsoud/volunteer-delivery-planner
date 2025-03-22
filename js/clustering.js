@@ -1,8 +1,8 @@
 // clustering.js
 
 function approxDistance(a, b) {
-    const dx = (a.lat - b.lat) * 111; // rough km per degree lat
-    const dy = (a.lng - b.lng) * 85;  // rough km per degree lng
+    const dx = (a.lat - b.lat) * 111; // km per degree latitude
+    const dy = (a.lng - b.lng) * 85;  // km per degree longitude
     return Math.sqrt(dx * dx + dy * dy);
   }
   
@@ -19,7 +19,7 @@ function approxDistance(a, b) {
     const allRoutes = [];
     let volIndex = 0;
   
-    // Step 2: For each city, assign routes
+    // Step 2: Cluster each city group
     for (const [city, cityAddresses] of Object.entries(groupedByCity)) {
       let unassigned = [...cityAddresses];
   
@@ -37,9 +37,9 @@ function approxDistance(a, b) {
           let minDist = Infinity;
   
           for (let i = 0; i < unassigned.length; i++) {
-            const d = approxDistance(last, unassigned[i]);
-            if (d < minDist) {
-              minDist = d;
+            const dist = approxDistance(last, unassigned[i]);
+            if (dist < minDist) {
+              minDist = dist;
               closestIdx = i;
             }
           }
@@ -49,7 +49,8 @@ function approxDistance(a, b) {
         }
   
         allRoutes.push({
-          name: `Volunteer ${volIndex + 1}`,
+          volunteerName: `Volunteer ${volIndex + 1}`,
+          volunteerPhone: "",
           city,
           addresses: route
         });
@@ -57,10 +58,11 @@ function approxDistance(a, b) {
         volIndex++;
       }
   
-      // Step 3: Assign remaining as extras
+      // Step 3: Create "Extra" routes for leftovers
       for (let i = 0; i < unassigned.length; i++) {
         allRoutes.push({
-          name: `Extra #${i + 1} (${city})`,
+          volunteerName: `Extra #${i + 1} (${city})`,
+          volunteerPhone: "",
           city,
           addresses: [unassigned[i]]
         });
