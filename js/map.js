@@ -9,14 +9,16 @@ const ROUTE_COLORS = [
     "#aaffc3", "#808000", "#ffd8b1", "#000075", "#808080"
 ];
 
-function initMap() {
-    map = new google.maps.Map(document.getElementById("app"), {
-        center: { lat: 43.6, lng: -79.6 }, // Mississauga-ish
-        zoom: 11,
-        mapTypeControl: false
+window.initMap = function initMap() {
+    // define your map and do setup here
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: { lat: 43.589, lng: -79.644 }, // Mississauga
+      zoom: 11,
     });
-}
-window.initMap = initMap // for google api call
+  
+    // Optional: Add initial marker or test something
+    console.log("Google Map initialized!");
+  };
 
 function clearMap() {
     for (const overlay of routeOverlays) {

@@ -94,15 +94,23 @@ function App() {
   
   console.log('initMap', window.initMap);
 
-  function loadGoogleMapsApi() {
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD9bDKziTaCch3My5RzdAFTDx-mo03mt9s&callback=initMap`;
-    script.async = true;
-    script.defer = true;
-    document.body.appendChild(script);
+
+  function loadGoogleMapsApiSafely() {
+    // Wait until initMap is defined before loading Google Maps
+    const checkInterval = setInterval(() => {
+      if (typeof window.initMap === "function") {
+        clearInterval(checkInterval);
+  
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyD9bDKziTaCch3My5RzdAFTDx-mo03mt9s&callback=initMap`;
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
+      }
+    }, 100); // check every 100ms
   }
   
   // Call this after everything else is mounted
-  loadGoogleMapsApi();
+  loadGoogleMapsApiSafely();
 
   ReactDOM.render(<App />, document.getElementById("app"));
