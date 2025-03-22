@@ -1,0 +1,19 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+  }
+  #app-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background-color: white;
+    border-bottom: 1px solid #ddd;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  #app-header img {
+    height: 40px;
+  }
