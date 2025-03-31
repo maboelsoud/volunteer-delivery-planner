@@ -21,7 +21,7 @@ function saveToCache(address, result) {
   localStorage.setItem("geocodeCache", JSON.stringify(cache));
 }
 
-function geocodeAddress(address) {
+function geocodeAddress_legacy(address) {
   const cached = getFromCache(address);
   if (cached) return Promise.resolve(cached);
 

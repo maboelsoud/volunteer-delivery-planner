@@ -11,63 +11,133 @@ function approxDistance(a, b) {
   
     // Step 1: Group addresses by city
     for (const addr of addresses) {
-      const city = addr.city || "Unknown";
+      let city = addr.city || "Unknown";
       if (!groupedByCity[city]) groupedByCity[city] = [];
       groupedByCity[city].push(addr);
     }
+    console.log("🚀 ~ clusterAddresses ~ groupedByCity:", groupedByCity)
   
     const allRoutes = [];
     let volIndex = 0;
+    // let extraRoutes = [];
   
     // Step 2: Cluster each city group
-    for (const [city, cityAddresses] of Object.entries(groupedByCity)) {
+    for (let [city, cityAddresses] of Object.entries(groupedByCity)) {
       let unassigned = [...cityAddresses];
   
-      while (unassigned.length > 0 && volIndex < volunteerCapacities.length) {
-        const cap = Math.min(volunteerCapacities[volIndex], 10); // enforce max 10 stops
-        const route = [];
-  
-        // Start with one address
-        route.push(unassigned.shift());
-  
-        // Greedily assign closest remaining addresses
-        while (route.length < cap && unassigned.length > 0) {
-          const last = route[route.length - 1];
-          let closestIdx = 0;
-          let minDist = Infinity;
-  
-          for (let i = 0; i < unassigned.length; i++) {
-            const dist = approxDistance(last, unassigned[i]);
-            if (dist < minDist) {
-              minDist = dist;
-              closestIdx = i;
-            }
-          }
-  
-          route.push(unassigned[closestIdx]);
-          unassigned.splice(closestIdx, 1);
-        }
-  
-        allRoutes.push({
-          volunteerName: `Volunteer ${volIndex + 1}`,
-          volunteerPhone: "",
-          city,
-          addresses: route
-        });
-  
-        volIndex++;
-      }
-  
-      // Step 3: Create "Extra" routes for leftovers
-      for (let i = 0; i < unassigned.length; i++) {
-        allRoutes.push({
+
+      let {
+        route,
+        extras,
+      } = buildRoute(cityAddresses, Math.min(volunteerCapacities[volIndex], 10))
+        // console.log("🚀 ~ clusterAddresses ~ route:", route)
+      
+      allRoutes.push({
+        volunteerName: `Volunteer ${volIndex + 1}`,
+        volunteerPhone: "",
+        city,
+        addresses: route
+      });
+      // volIndex++;
+
+      // extraRoutes.push(...extras);
+
+      allRoutes.push(...extras.map((x,i)=> ({
           volunteerName: `Extra #${i + 1} (${city})`,
           volunteerPhone: "",
           city,
-          addresses: [unassigned[i]]
-        });
-      }
+          addresses: [x]
+      })))
+      
+      // while (unassigned.length > 0 && volIndex < volunteerCapacities.length) {
+      //   const cap = Math.min(volunteerCapacities[volIndex], 10); // enforce max 10 stops
+      //   const route = [];
+  
+      //   // Start with one address
+      //   route.push(unassigned.shift());
+  
+      //   // Greedily assign closest remaining addresses
+      //   while (route.length < cap && unassigned.length > 0) {
+      //     const last = route[route.length - 1];
+      //     let closestIdx = 0;
+      //     let minDist = Infinity;
+  
+      //     for (let i = 0; i < unassigned.length; i++) {
+      //       const dist = approxDistance(last, unassigned[i]);
+      //       if (dist < minDist) {
+      //         minDist = dist;
+      //         closestIdx = i;
+      //       }
+      //     }
+  
+      //     route.push(unassigned[closestIdx]);
+      //     unassigned.splice(closestIdx, 1);
+      //   }
+
+      
+  
+      //   allRoutes.push({
+      //     volunteerName: `Volunteer ${volIndex + 1}`,
+      //     volunteerPhone: "",
+      //     city,
+      //     addresses: route
+      //   });
+  
+      //   volIndex++;
+      // }
+  
+      // Step 3: Create "Extra" routes for leftovers
+      // for (let i = 0; i < unassigned.length; i++) {
+      //   allRoutes.push({
+      //     volunteerName: `Extra #${i + 1} (${city})`,
+      //     volunteerPhone: "",
+      //     city,
+      //     addresses: [unassigned[i]]
+      //   });
+      // }
     }
   
     return allRoutes;
   }
+
+  function buildRoute(addresses, cap) {
+    let unassigned = [...addresses];
+    const route = [];
+    // Start with one address
+    route.push(unassigned.shift());
+
+    // Greedily assign closest remaining addresses
+    while (route.length < cap && unassigned.length > 0) {
+      const last = route[route.length - 1];
+      let closestIdx = 0;
+      let minDist = Infinity;
+
+      for (let i = 0; i < unassigned.length; i++) {
+        const dist = approxDistance(last, unassigned[i]);
+        if (dist < minDist) {
+          minDist = dist;
+          closestIdx = i;
+        }
+      }
+
+      route.push(unassigned[closestIdx]);
+      unassigned.splice(closestIdx, 1);
+    }
+
+    return {
+      route,
+      extras: unassigned,
+    }
+
+  }
+
+  // function createExtraRoutes(addresses) {
+  //     for (let i = 0; i < unassigned.length; i++) {
+  //       allRoutes.push({
+  //         volunteerName: `Extra #${i + 1} (${city})`,
+  //         volunteerPhone: "",
+  //         city,
+  //         addresses: [unassigned[i]]
+  //       });
+  //     }
+  // }
